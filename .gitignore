@@ -1,0 +1,5 @@
+WikiScraper_Perfomance.ipynb
+geckodriver.log
+/sites/*
+/__pycache__
+/ErrorFiles/*

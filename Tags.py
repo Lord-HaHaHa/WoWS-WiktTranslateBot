@@ -1,0 +1,21 @@
+wowsTags = [
+    "|Anno=",
+    "|Model3D=",
+    "|Performance=",
+    "|Pros=",
+    "|Cons=",
+    "|Research=",
+    "|OptimalConfiguration=",
+    "|Upgrades=",
+    "|Consumables=",
+    "|CommanderSkills=",
+    "|Camouflage=",
+    "|Signals=",
+    "|Gallery=",
+    "|Data=",
+    "|History=",
+    "|HistoryGallery=",
+    "|Video=",
+    "|Ref=",
+    "<!-- DO NOT DELETE THIS LINE. DO NOT INSERT ANYTHING BELOW THIS LINE -->"
+]
