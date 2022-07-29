@@ -198,7 +198,7 @@ if len(sys.argv) == 2:
         sectionName = startIndexes[listStart[i]]
         section = wikiText[listStart[i]+len(startIndexes[listStart[i]]):listStart[i+1]]
         print(sectionName)
-        if(sectionName == "|Performance="):
+        if(sectionName == "|Performance=" or True):
             if(sectionName == "|Anno="):
                 section = updateLinks(section)
                 section = updateTemplates(section)
