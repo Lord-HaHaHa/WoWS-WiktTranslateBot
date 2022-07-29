@@ -87,7 +87,6 @@ wowsTemplates = {
 # Sontige Templates
   "AA Sidebar Warning Insert": "",
   "":"",
-  "Prem Ship Camo Insert|shiptier=10":"Prem Ship Camo Insert|shiptier=10",
   "WoWS DevBlog Link Insert":"WoWS DevBlog Link Einfügen",
 }
 
@@ -99,5 +98,9 @@ wowsSkipTemplates = [
     "Kapitänsfertigkeiten CR*",
     "Kapitänsfertigkeiten CV*",
     "Signal Flags*",
-    "VideoYT*"
+    "VideoYT*",
+    "Sierra Mike*"
+    "India Delta*"
+    "India Yankee*"
+    "November Foxtrot*"
 ]
