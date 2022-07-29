@@ -5,6 +5,7 @@ from Links import wowsLinks
 from Kapitänskills import *
 from deep_translator import GoogleTranslator
 import re
+import sys
 
 def updateLinks(substring):
     pos1 = -1 
@@ -74,7 +75,7 @@ def updateKapSkills(substring):
             subList[pos1+2:pos2] = trans
             substring = ''.join(subList)
         except:
-            print("ERROR CAPTIANTYPE: " + mappingValueType)
+            print("ERROR - False Tag: " + mappingValueType)
 
     ## Austauch der Kaptän Skillungen 
     if(mappingValueType == "Commander Skills 3 BB"):
@@ -100,8 +101,9 @@ def updateKapSkills(substring):
 def translateSection(substring):
     string = str(substring)
     # Textübersetzung via GoogleTranslate
-    slices = string.split("\\n")
+    slices = string.split("\n")
     final = ""
+    print(len(slices))
     for pice in slices:
         translated = GoogleTranslator(source='auto', target='de').translate(str(pice)) 
         if(translated != None):              
@@ -166,103 +168,115 @@ def translateText(substring):
     final = translated.replace('\\n', '\n')
     return(final)
 
-ship="Austin"
-fileName = "./sites/" + ship + ".txt"
-URL_en = "https://wiki.wargaming.net/api.php?action=parse&page=Ship:" + ship + "&prop=wikitext&uselang=en&format=json"
+if len(sys.argv) == 2:
+    print(sys.argv)
+    ship = sys.argv[1]
+    fileName = "./Sites/" + ship + ".txt"
+    URL_en = "https://wiki.wargaming.net/api.php?action=parse&page=Ship:" + ship + "&prop=wikitext&uselang=en&format=json"
 
-req = requests.get(URL_en)
-reqJson = req.json()
-wikiText = ""
-wikiText = str(reqJson["parse"]['wikitext'])
+    req = requests.get(URL_en)
+    reqJson = req.json()
+    wikiText = ""
+    
+    try:
+        wikiText = str(reqJson["parse"]['wikitext']['*'])
+    except:
+        raise ValueError("Kein Gültigen Schiffsnamen eingegeben")
 
-regex = "\\"+'|\\'.join(wowsTags)
-startIndexes = dict()
-for match in re.finditer(regex, wikiText):
-    startIndexes.update({match.start() : match.group()})
+    regex = "\\"+'|\\'.join(wowsTags)
+    startIndexes = dict()
+    for match in re.finditer(regex, wikiText):
+        startIndexes.update({match.start() : match.group()})
 
-listStart = list()
-for i in startIndexes:
-    listStart.append(i)
+    listStart = list()
+    for i in startIndexes:
+        listStart.append(i)
 
-i=0
-file = open(fileName, "w", encoding="UTF8")
-while(i+1 < len(listStart)):
-    sectionName = startIndexes[listStart[i]]
-    section = wikiText[listStart[i]+len(startIndexes[listStart[i]]):listStart[i+1]]
-    print(sectionName)
-    if(sectionName == "|Signals=" or True):
-        if(sectionName == "|Anno="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
+    i=0
+    file = open(fileName, "w", encoding="UTF8")
+    while(i+1 < len(listStart)):
+        sectionName = startIndexes[listStart[i]]
+        section = wikiText[listStart[i]+len(startIndexes[listStart[i]]):listStart[i+1]]
+        print(sectionName)
         if(sectionName == "|Performance="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-            section = "\n{{Block|!|content=Dieser Artikel wurde Maschienell übersetzt und wurde noch nicht Reviewed}}\n" + section
-        elif(sectionName == "|Pros="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Cons="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Research="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|OptimalConfiguration="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Upgrades="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Consumables="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|CommanderSkills="):
-            section = updateKapSkills(section)
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-            section  = section.replace("\\n", '\n')
-        elif(sectionName == "|Camouflage="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Signals="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Gallery="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Data="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|History="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|HistoryGallery="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        elif(sectionName == "|Video="):
-            section = updateLinks(section)
-            section = updateTemplates(section)
-            section = translateText(section)
-        #elif(sectionName == "|Ref="):
-        #    section = updateLinks(section)
-        #    section = updateTemplates(section)
-        #    section = translateText(section)
-        #print(sectionName, section)
-        file.write(sectionName + " " + section)
-    i = i + 1 
-file.close()
+            if(sectionName == "|Anno="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            if(sectionName == "|Performance="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+                section = "\n{{Block|!|content=Dieser Artikel wurde Maschienell übersetzt und wurde noch nicht Reviewed}}\n" + section
+            elif(sectionName == "|Pros="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Cons="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Research="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|OptimalConfiguration="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Upgrades="):
+                print("Orginanl:", section, "\n")
+                section = updateLinks(section)
+                print("Update Links:", section, "\n")
+                section = updateTemplates(section)
+                print("Update Templates:", section, "\n")
+                section = translateText(section)
+                print("Translate:", section, "\n")
+            elif(sectionName == "|Consumables="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|CommanderSkills="):
+                section = updateKapSkills(section)
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+                section  = section.replace("\\n", '\n')
+            elif(sectionName == "|Camouflage="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Signals="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Gallery="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Data="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|History="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|HistoryGallery="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            elif(sectionName == "|Video="):
+                section = updateLinks(section)
+                section = updateTemplates(section)
+                section = translateText(section)
+            #elif(sectionName == "|Ref="):
+            #    section = updateLinks(section)
+            #    section = updateTemplates(section)
+            #    section = translateText(section)
+            #print(sectionName, section)
+            file.write(sectionName + " " + section)
+        i = i + 1 
+    file.close()
+else:
+    raise ValueError("Kein Schiffsnamen eingegeben")
